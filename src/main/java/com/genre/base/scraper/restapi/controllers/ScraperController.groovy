@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 
-
+@RequestMapping("/Scraper/")
 @Controller
 class ScraperController {
 
@@ -30,6 +30,20 @@ class ScraperController {
 
         if(json.contains("no")){
             scrapeManager.toggleCraigslistScraperProcess(false)
+        }
+    }
+
+
+    @RequestMapping(value = "/MLB/activate", method = RequestMethod.POST)
+    @ResponseStatus(value=HttpStatus.OK)
+    void activateMLBScraper(@RequestParam("json") String json) {
+
+        if(json.contains("yes")){
+            scrapeManager.toggleMLBScrape(true)
+        }
+
+        if(json.contains("no")){
+            scrapeManager.toggleMLBScrape(false)
         }
     }
 

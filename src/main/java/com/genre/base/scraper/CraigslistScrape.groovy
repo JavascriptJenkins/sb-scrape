@@ -1,4 +1,4 @@
-package com.genre.base
+package com.genre.base.scraper
 
 import org.springframework.stereotype.Component
 

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component
 interface ScrapeManager {
 
     void toggleCraigslistScraperProcess(boolean toggle)
+    void toggleMLBScrape(boolean toggle)
 
 
 

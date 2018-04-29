@@ -1,6 +1,6 @@
 package com.genre.base.scraper.impl
 
-import com.genre.base.CraigslistScrape
+import com.genre.base.scraper.CraigslistScrape
 import com.genre.base.objects.ScraperObject
 import com.genre.base.scraper.ScrapeManager
 import com.genre.base.scraper.SearchObject
@@ -17,14 +17,18 @@ class CraigslistScrapeImpl implements CraigslistScrape {
 
     ScrapeManager scrapeManager
 
+    int searchObjectCounter = 0;
+    int maxRunCounter = 0;
+    int maxRun = 10;
+
+    ArrayList<SearchObject> searchObjectArrayList = new ArrayList<>();
+
+    ArrayList<String> emailListCars = new ArrayList<>();
+
+
 
     void toggleCraigslistScraperProcess(boolean activateScraper){
-        int searchObjectCounter = 0;
-        int maxRunCounter = 0;
-        int maxRun = 10;
-        ArrayList<SearchObject> searchObjectArrayList = new ArrayList<>();
 
-        ArrayList<String> emailListCars = new ArrayList<>();
         emailListCars.add("cam.malia92@gmail.com")
         emailListCars.add("unwoundcracker@gmail.com")
 
