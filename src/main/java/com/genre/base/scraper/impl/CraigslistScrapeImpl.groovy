@@ -17,13 +17,13 @@ class CraigslistScrapeImpl implements CraigslistScrape {
 
     ScrapeManager scrapeManager
 
-    int searchObjectCounter = 0;
-    int maxRunCounter = 0;
-    int maxRun = 10;
+    int searchObjectCounter = 0
+    int maxRunCounter = 0
+    int maxRun = 10
 
-    ArrayList<SearchObject> searchObjectArrayList = new ArrayList<>();
+    ArrayList<SearchObject> searchObjectArrayList = new ArrayList<>()
 
-    ArrayList<String> emailListCars = new ArrayList<>();
+    ArrayList<String> emailListCars = new ArrayList<>()
 
 
 
@@ -53,17 +53,17 @@ class CraigslistScrapeImpl implements CraigslistScrape {
         while(activateScraper){
 
             if(maxRunCounter < maxRun){
-                println("scrape executed: " + maxRunCounter + " --> times");
-                Thread.sleep(4000); // 4 seconds
+                println("scrape executed: " + maxRunCounter + " --> times")
+                Thread.sleep(4000) // 4 seconds
                 if(maxRunCounter >= searchObjectArrayList.size()){
-                    searchObjectCounter = 0; // reset the object counter to 0 if the searchObjects index gets too high and will throw null pointer
+                    searchObjectCounter = 0 // reset the object counter to 0 if the searchObjects index gets too high and will throw null pointer
                 }
-                executeSeleniumSearch(searchObjectArrayList.get(searchObjectCounter).getUrl(), searchObjectArrayList.get(searchObjectCounter).getEmailList());
+                executeSeleniumSearch(searchObjectArrayList.get(searchObjectCounter).getUrl(), searchObjectArrayList.get(searchObjectCounter).getEmailList())
 
 //                executeSendToKafkaProducer(searchObjectArrayList.get(searchObjectCounter).getUrl(), searchObjectArrayList.get(searchObjectCounter).getEmailList())
 
-                searchObjectCounter ++;
-                maxRunCounter ++;
+                searchObjectCounter ++
+                maxRunCounter ++
 
             } else {
                 println("scraper ended because it reached maxRuns: " + maxRunCounter)
@@ -79,7 +79,7 @@ class CraigslistScrapeImpl implements CraigslistScrape {
         //System.setProperty("webdriver.gecko.driver","/Users/genreboy/Downloads/chromedriver.exe");
         WebDriver driver = new ChromeDriver()
         try{
-            driver.get(url); // goes to a url
+            driver.get(url) // goes to a url
         } catch (Exception ex){
             // ignore the exception and try again
             Thread.wait(20000)// wait 20 seconds
@@ -89,8 +89,8 @@ class CraigslistScrapeImpl implements CraigslistScrape {
 
         // get list of all craigslist search element results
         List<WebElement> resultElements = driver.findElementsByClassName("result-row")
-        WebElement titleElement;
-        WebElement priceElement;
+        WebElement titleElement
+        WebElement priceElement
 
         for(WebElement element: resultElements){
             if(isElementPresent(By.className("result-title"), element)){
