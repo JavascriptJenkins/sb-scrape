@@ -92,7 +92,7 @@ class MLBcomScrapeImpl implements MLBcomScrape {
         MLBPlayerPage mlbPlayerPage = new MLBPlayerPage(driver)
         List<WebElement> allTableRows = mlbPlayerPage.allTrElements
 
-        List<LastGamesVO> lastGamesVOList = new ArrayList();
+        List<LastGamesVO> lastGamesVOList = new ArrayList()
 
         for(WebElement element:allTableRows){
             if(element.text.contains("Last 7 Games")){
