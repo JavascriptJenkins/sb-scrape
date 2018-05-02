@@ -2,6 +2,7 @@ package com.genre.base.email.impl
 
 import com.genre.base.email.EmailManager
 import com.genre.base.email.objects.CraigslistObject
+import com.genre.base.objects.ScraperObject
 import org.springframework.stereotype.Component
 
 import javax.mail.Message
@@ -58,14 +59,14 @@ class EmailManagerImpl implements EmailManager {
 
 
 
-    private String formatCraigslistObjectsToEmailHTML(ArrayList<CraigslistObject> craigslistObjects){
+    String formatCraigslistObjectsToEmailHTML(ArrayList<ScraperObject> scraperObjects){
 
         StringBuilder emailHTML = new StringBuilder()
 
-        for(CraigslistObject craigslistObject: craigslistObjects){
-            emailHTML.append("<h2>" + craigslistObject.getPostTitle() + "</h2>")
-            emailHTML.append("<h2>" + craigslistObject.getPrice() + "</h2>")
-            emailHTML.append("<a href=\""+craigslistObject.getUrl()+"\">" + "<h4>" + craigslistObject.getUrl() + "</h4>" + "</a>")
+        for(ScraperObject scraperObject : scraperObjects){
+            emailHTML.append("<h2>" + scraperObject.getPostTitle() + "</h2>")
+            emailHTML.append("<h2>" + scraperObject.getPrice() + "</h2>")
+            emailHTML.append("<a href=\""+scraperObject.getUrl()+"\">" + "<h4>" + scraperObject.getUrl() + "</h4>" + "</a>")
             emailHTML.append("<hr>") // adds a line under each result
         }
 
