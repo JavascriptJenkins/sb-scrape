@@ -6,8 +6,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.genre.base</groupId>
-	<artifactId>sb-scrape</artifactId>
-	<version>1.0</version>
+	<artifactId>app</artifactId>
+	<packaging>jar</packaging>
 
 
 	<!-- This parent pom contains the execution configurations for the repackage goal. -->
@@ -103,10 +103,10 @@
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>org.springframework.boot</groupId>-->
+			<!--<artifactId>spring-boot-devtools</artifactId>-->
+		<!--</dependency>-->
 
 		<dependency>
 			<groupId>com.rometools</groupId>
@@ -114,11 +114,11 @@
 			<version>1.8.0</version>
 		</dependency>
 
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>24.1-jre</version>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>com.google.guava</groupId>-->
+			<!--<artifactId>guava</artifactId>-->
+			<!--<version>24.1-jre</version>-->
+		<!--</dependency>-->
 
 
 		<dependency>
@@ -147,6 +147,7 @@
 
 
 	<build>
+		<finalName>app</finalName>
 		<plugins>
 			<!-- This is what makes spring boot work -->
 			<plugin>
@@ -190,9 +191,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
-
-
 
 		</plugins>
 	</build>
