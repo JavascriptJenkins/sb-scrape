@@ -3,6 +3,10 @@
 
 echo 'OMG LOOK A REMOTE SCRIPT IS EXECUTING'
 
-sh '/bin/bash docker container ls'
+sh 'ls'
+
+sh 'mkdir mynewdir'
+
+sh 'docker container ls'
 
 sh '/bin/bash docker kill $(docker ps -q)'
