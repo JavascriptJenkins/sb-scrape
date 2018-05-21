@@ -3,8 +3,7 @@
 
 echo 'OMG LOOK A REMOTE SCRIPT IS EXECUTING'
 
-mkdir 'mynewdir'
-
 docker container 'ls'
 
-docker container 'kill $(docker ps -q)'
+docker run 'javascriptjenkins/sb-scrape:latest'
+
