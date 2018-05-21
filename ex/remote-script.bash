@@ -3,8 +3,8 @@
 
 echo 'OMG LOOK A REMOTE SCRIPT IS EXECUTING'
 
-ls
+mkdir 'mynewdir'
 
-docker 'container ls'
+docker container 'ls'
 
-docker 'kill $(docker ps -q)'
+docker container 'kill $(docker ps -q)'
