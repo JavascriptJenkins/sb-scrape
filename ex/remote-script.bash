@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 
-'echo OMG LOOK A REMOTE SCRIPT IS EXECUTING'
+ehco 'OMG LOOK A REMOTE SCRIPT IS EXECUTING'
 
-'ls'
+ls
 
-'docker container ls'
+docker 'container ls'
 
-'docker kill $(docker ps -q)'
+docker 'kill $(docker ps -q)'
