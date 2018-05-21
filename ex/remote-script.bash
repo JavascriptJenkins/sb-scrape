@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 
-ehco 'OMG LOOK A REMOTE SCRIPT IS EXECUTING'
+echo 'OMG LOOK A REMOTE SCRIPT IS EXECUTING'
 
 ls
 
