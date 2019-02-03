@@ -161,8 +161,14 @@ class CraigslistScrapeImpl implements CraigslistScrape {
                 println("Title URL: "+titleElement.getAttribute("href")) // parses out the link
                 //println(element.getText())
 
-                // add to the list to send to the email recipients
-                craigslistObjectsLocalToSearch.add(new ScraperObject(price:priceElement.getText(), postTitle: titleElement.getText(), url: titleElement.getAttribute("href")))
+                // filter out crap
+                if(titleElement.getText().contains("- FINANCE ONLINE")){
+                    // do nothing
+                }else{
+                    // add to the list to send to the email recipients
+                    craigslistObjectsLocalToSearch.add(new ScraperObject(price:priceElement.getText(), postTitle: titleElement.getText(), url: titleElement.getAttribute("href")))
+                }
+
 
                 // add to database
                 //craigslistObjectDao.save(new ScraperObject(price:priceElement.getText(), postTitle: titleElement.getText(), url: titleElement.getAttribute("href")))

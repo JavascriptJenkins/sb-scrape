@@ -8,6 +8,7 @@ interface ScrapeManager {
 
     void toggleCraigslistScraperProcess(boolean toggle)
     void toggleMLBScrape(boolean toggle)
+    void toggleDfoGoalieScrape(boolean toggle)
 
 
 

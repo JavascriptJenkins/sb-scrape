@@ -85,7 +85,7 @@ class MLBcomScrapeImpl implements MLBcomScrape {
 
     private void executeSeleniumSearch(String url, ArrayList<String> emailList){
         ArrayList<ScraperObject> craigslistObjectsLocalToSearch = new ArrayList<>()
-        WebDriver driver = new ChromeDriver()
+        ChromeDriver driver = new ChromeDriver()
 
         initScrape(url,driver) // driver.get(url)
 

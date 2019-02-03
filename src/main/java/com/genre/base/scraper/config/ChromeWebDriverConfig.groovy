@@ -15,7 +15,7 @@ class ChromeWebDriverConfig {
     boolean initChromeDriver(){
 //        System.setProperty("webdriver.gecko.driver","/Users/genreboy/Downloads/chromedriver.exe")
         logger.info("INIT CHROME DRIVER SETTINGS")
-        System.setProperty("webdriver.gecko.driver","chromedriver/chromedriver")
+        //System.setProperty("webdriver.chrome.driver","chromedriver/chromedriver")
         return true
     }
 
