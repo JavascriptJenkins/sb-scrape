@@ -4,6 +4,9 @@ class ScrapeConstants {
 
     static MLB_SCRAPE_TYPE = "MLB-SCRAPE"
     static DFO_GOALIE_SCRAPE_TYPE = "DFO_GOALIE_SCRAPE"
+    static CONFIRMED = "Confirmed"
+
+    static NHL_STARTING_GOALIE_SCRAPE_URL = "https://www.dailyfaceoff.com/starting-goalies/"
 
 
 }

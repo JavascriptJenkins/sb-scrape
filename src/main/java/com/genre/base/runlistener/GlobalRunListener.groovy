@@ -24,18 +24,16 @@ class GlobalRunListener implements ApplicationListener<ApplicationReadyEvent>{
     void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         println("THE APP STARTED OMG")
         println("STARTING GOALIE SCRAPE")
-        Thread.sleep(2000)
         init()
-    }
-
-
-    // this is a hack to make spring inject beans
-    @PostConstruct
-    void loadBeans(){
-        println("LOADING BEANS BABY")
     }
 
     void init(){
         dfoGoalieScrape.checkStartingGoalies()
+    }
+
+    // this is a hack to make spring inject beans early
+    @PostConstruct
+    void loadBeans(){
+        println("LOADING BEANS BABY")
     }
 }

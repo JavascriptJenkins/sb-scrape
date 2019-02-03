@@ -11,6 +11,6 @@ interface DfoGoalieScrape {
     //         If yes, then check for isConfirmed.  If isConfirmed == true, then send alert.  If false, do nothing.
 
     // This method will return false if there is technical difficulty scraping.
-    boolean checkStartingGoalies()
+    void checkStartingGoalies()
 
 }
