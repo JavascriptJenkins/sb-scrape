@@ -3,6 +3,7 @@ package com.genre.base.scraper.impl
 import com.genre.base.scraper.ChromeDriverManager
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
+import org.openqa.selenium.remote.RemoteWebDriver
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -25,6 +26,7 @@ class ChromeDriverManagerImpl implements ChromeDriverManager{
             }
         } catch (Exception ex){
             logger.info('----------> Caught exception trying to kill driver at end of successful scrape cycle. ')
+            logger.info('Exception: ',ex)
         }
     }
 
