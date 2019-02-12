@@ -34,6 +34,9 @@ class GoalieVO implements Serializable {
     public Integer isConfirmed
 
     @JsonProperty
+    public Integer wasSentToAllEmails // toggle this after success sending to all people subscribed
+
+    @JsonProperty
     public String dateTimeOfGame
 
     @Temporal(TemporalType.TIMESTAMP)
