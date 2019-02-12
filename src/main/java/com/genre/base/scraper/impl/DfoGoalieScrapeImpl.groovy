@@ -1,19 +1,14 @@
 package com.genre.base.scraper.impl
 
-import com.genre.base.objects.ScraperObject
 import com.genre.base.scraper.ChromeDriverManager
 import com.genre.base.scraper.DfoGoalieScrape
 import com.genre.base.scraper.ScrapeManager
-import com.genre.base.scraper.SearchObject
 import com.genre.base.scraper.constants.ScrapeConstants
 import com.genre.base.scraper.executers.ExecuteGoalieScrape
-import com.genre.base.scraper.objects.LastGamesVO
 import com.genre.base.scraper.objects.page.DfoGoaliePage
-import com.genre.base.scraper.objects.page.MLBPlayerPage
 import com.genre.base.scraper.repo.GoalieVORepo
 import com.genre.base.scraper.repo.objects.nhl.GoalieVO
 import com.genre.base.utilities.SysUtil
-import org.openqa.selenium.WebDriverException
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
@@ -22,14 +17,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import java.lang.reflect.InvocationTargetException
-import java.security.Timestamp
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
-
 
 @Component
-class DfoGoalieScrapeImpl implements DfoGoalieScrape {
+class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
 
 
     @Autowired
@@ -78,7 +68,7 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape {
 
 
         // infinite loop
-        while(2 > 1){
+      //  while(2 > 1){
             logger.info('-----> In loop, waiting for scrape to start. ')
             Thread.sleep(sysUtil.getRandomNumber()) // sleep random time before scraping
             logger.info('-----> In loop, waiting over.  Scrape Started. ')
@@ -93,7 +83,7 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape {
                 logger.info('-----> Scrape failed.  Trying again. ')
                 chromeDriverManager.quitDriver(driver)
             }
-        }
+       // }
     }
 
     // extract data from the page and save it to database
@@ -171,6 +161,8 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape {
 
     }
 
-
-
+    @Override
+    void run() {
+        checkStartingGoalies()
+    }
 }

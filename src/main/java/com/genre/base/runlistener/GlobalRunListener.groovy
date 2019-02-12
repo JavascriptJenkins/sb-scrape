@@ -1,13 +1,22 @@
 package com.genre.base.runlistener
 
+import com.genre.base.scraper.ChromeDriverManager
 import com.genre.base.scraper.DfoGoalieScrape
 import com.genre.base.scraper.MLBcomScrape
+import com.genre.base.scraper.ScrapeManager
+import com.genre.base.scraper.executers.ExecuteGoalieScrape
+import com.genre.base.scraper.impl.DfoGoalieScrapeImpl
+import com.genre.base.scraper.repo.GoalieVORepo
+import com.genre.base.utilities.SysUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.ApplicationListener
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
+import org.springframework.scheduling.support.PeriodicTrigger
 import org.springframework.stereotype.Component
 
 import javax.annotation.PostConstruct
+import java.util.concurrent.TimeUnit
 
 
 @Component
@@ -19,6 +28,24 @@ class GlobalRunListener implements ApplicationListener<ApplicationReadyEvent>{
     @Autowired
     DfoGoalieScrape dfoGoalieScrape
 
+    @Autowired
+    ThreadPoolTaskScheduler threadPoolTaskScheduler
+
+    @Autowired
+    ScrapeManager scrapeManager
+
+    @Autowired
+    GoalieVORepo goalieVORepo
+
+    @Autowired
+    SysUtil sysUtil
+
+    @Autowired
+    ChromeDriverManager chromeDriverManager
+
+    @Autowired
+    ExecuteGoalieScrape executeGoalieScrape
+
 
     @Override
     void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
@@ -28,7 +55,17 @@ class GlobalRunListener implements ApplicationListener<ApplicationReadyEvent>{
     }
 
     void init(){
-        dfoGoalieScrape.checkStartingGoalies()
+
+        //dfoGoalieScrape.checkStartingGoalies()
+        PeriodicTrigger periodicTrigger = new PeriodicTrigger(1000, TimeUnit.MICROSECONDS)
+        periodicTrigger.setFixedRate(false)
+        threadPoolTaskScheduler.schedule(new DfoGoalieScrapeImpl(
+                scrapeManager:scrapeManager,
+                goalieVORepo:goalieVORepo,
+                sysUtil:sysUtil,
+                chromeDriverManager:chromeDriverManager,
+                executeGoalieScrape:executeGoalieScrape), periodicTrigger)
+
     }
 
     // this is a hack to make spring inject beans early
