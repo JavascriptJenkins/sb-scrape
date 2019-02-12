@@ -2,20 +2,12 @@ package com.genre.base.scraper.repo.objects.nhl
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.hibernate.annotations.ManyToAny
-
 import javax.persistence.Column
 import javax.persistence.Entity
-import javax.persistence.ForeignKey
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
-import javax.persistence.IdClass
 import javax.persistence.JoinColumn
-import javax.persistence.JoinColumns
-import javax.persistence.ManyToMany
-import javax.persistence.ManyToOne
-import javax.persistence.OneToMany
 import javax.persistence.Table
 
 // this table manages the many-many user to subscription relationship
@@ -25,7 +17,6 @@ import javax.persistence.Table
 //@IdClass(CompositeUserEmailKey.class)
 class UserSubscriptionVO implements Serializable {
 
-    // this entity needs an ID:
     @Id
     @Column(name="user_subscription_id")
     @GeneratedValue(strategy = GenerationType.AUTO)

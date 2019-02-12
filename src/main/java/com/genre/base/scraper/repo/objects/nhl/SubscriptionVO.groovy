@@ -18,6 +18,7 @@ class SubscriptionVO implements Serializable {
 
     @Id
     @JsonProperty
+    @GeneratedValue(strategy = GenerationType.AUTO)
     Integer subscription_type_id
 
     @JsonProperty
