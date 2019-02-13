@@ -150,7 +150,8 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
                             dateTimeOfGame: gameDateTime,
                             isConfirmed:isConfirmedInt,
                             updateTimeStamp: new Date(),
-                            createTimeStamp: new Date()
+                            createTimeStamp: new Date(),
+                            wasSentToAllEmails: 0
                     ))
                 }
 

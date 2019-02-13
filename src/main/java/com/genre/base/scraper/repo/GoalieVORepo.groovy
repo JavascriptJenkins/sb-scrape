@@ -1,10 +1,13 @@
 package com.genre.base.scraper.repo
 
 import com.genre.base.scraper.repo.objects.nhl.GoalieVO
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 
 @Component
 interface GoalieVORepo extends CrudRepository<GoalieVO, Long>{
@@ -14,5 +17,22 @@ interface GoalieVORepo extends CrudRepository<GoalieVO, Long>{
     GoalieVO findByDateTimeOfGameAndName(
             @Param("dateTimeOfGame") String dateTimeOfGame,
             @Param("name") String name)
+
+
+    // pass in a 1 or 0 and get a list of sent or non sent goalies
+    @Query("FROM GoalieVO g WHERE g.wasSentToAllEmails = :wasSentToAllEmails")
+    Collection <GoalieVO> getAllGoaliesByWasSentToAll(
+            @Param("wasSentToAllEmails") int wasSentToAllEmails
+    )
+
+    @Transactional
+            (
+                    propagation = Propagation.REQUIRED,
+                    readOnly = false,
+                    rollbackFor = Throwable.class
+            )
+    @Modifying
+    @Query("update GoalieVO g set g.wasSentToAllEmails =:wasSentToAllEmails where g.id =:id")
+    void updateGoalieVOToggle(@Param("wasSentToAllEmails") int wasSentToAllEmails, @Param("id") int id)
 
 }

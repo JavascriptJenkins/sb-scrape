@@ -21,7 +21,7 @@ class GoalieVO implements Serializable {
 
     @Id
     @JsonProperty
-    public Integer id
+    public int id
 
     @Id
     @JsonProperty
@@ -31,10 +31,10 @@ class GoalieVO implements Serializable {
     public String teamName
 
     @JsonProperty
-    public Integer isConfirmed
+    public int isConfirmed
 
     @JsonProperty
-    public Integer wasSentToAllEmails // toggle this after success sending to all people subscribed
+    public int wasSentToAllEmails // toggle this after success sending to all people subscribed
 
     @JsonProperty
     public String dateTimeOfGame

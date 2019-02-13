@@ -1,5 +1,6 @@
 package com.genre.base.runlistener
 
+import com.genre.base.email.EmailManager
 import com.genre.base.scraper.ChromeDriverManager
 import com.genre.base.scraper.DfoGoalieScrape
 import com.genre.base.scraper.MLBcomScrape
@@ -7,6 +8,8 @@ import com.genre.base.scraper.ScrapeManager
 import com.genre.base.scraper.executers.ExecuteGoalieScrape
 import com.genre.base.scraper.impl.DfoGoalieScrapeImpl
 import com.genre.base.scraper.repo.GoalieVORepo
+import com.genre.base.scraper.repo.UserVORepo
+import com.genre.base.scraper.task.ScrapeMailerTask
 import com.genre.base.utilities.SysUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.event.ApplicationReadyEvent
@@ -46,6 +49,14 @@ class GlobalRunListener implements ApplicationListener<ApplicationReadyEvent>{
     @Autowired
     ExecuteGoalieScrape executeGoalieScrape
 
+    @Autowired
+    EmailManager emailManager
+
+    @Autowired
+    ScrapeMailerTask scrapeMailerTask
+
+    @Autowired
+    UserVORepo userVORepo
 
     @Override
     void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
@@ -59,12 +70,25 @@ class GlobalRunListener implements ApplicationListener<ApplicationReadyEvent>{
         //dfoGoalieScrape.checkStartingGoalies()
         PeriodicTrigger periodicTrigger = new PeriodicTrigger(1000, TimeUnit.MICROSECONDS)
         periodicTrigger.setFixedRate(false)
+
+
         threadPoolTaskScheduler.schedule(new DfoGoalieScrapeImpl(
                 scrapeManager:scrapeManager,
                 goalieVORepo:goalieVORepo,
                 sysUtil:sysUtil,
                 chromeDriverManager:chromeDriverManager,
                 executeGoalieScrape:executeGoalieScrape), periodicTrigger)
+
+
+        threadPoolTaskScheduler.schedule(new ScrapeMailerTask(
+                goalieVORepo:goalieVORepo,
+                emailManager: emailManager,
+                sysUtil:sysUtil,
+                userVORepo:userVORepo), periodicTrigger)
+
+
+
+
 
     }
 

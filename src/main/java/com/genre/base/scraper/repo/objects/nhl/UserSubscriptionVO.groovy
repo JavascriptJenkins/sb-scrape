@@ -7,6 +7,7 @@ import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
+import javax.persistence.IdClass
 import javax.persistence.JoinColumn
 import javax.persistence.Table
 
@@ -14,7 +15,7 @@ import javax.persistence.Table
 @JsonIgnoreProperties
 @Entity
 @Table(name="user_subscription")
-//@IdClass(CompositeUserEmailKey.class)
+@IdClass(CompUserSubKey.class)
 class UserSubscriptionVO implements Serializable {
 
     @Id
