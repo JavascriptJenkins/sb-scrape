@@ -48,6 +48,9 @@ class UserVO implements Serializable {
     @JsonProperty
     Integer trialUser // will be toggled to 1 if a trial user
 
+    @JsonProperty
+    Integer isAdmin // will be toggled to 1 if is an admin
+
     @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty
     java.util.Date updateTimeStamp
