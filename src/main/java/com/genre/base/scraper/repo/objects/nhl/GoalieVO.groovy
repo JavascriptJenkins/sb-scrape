@@ -47,5 +47,3 @@ class GoalieVO implements Serializable {
     java.util.Date createTimeStamp
 
 }
-
-
