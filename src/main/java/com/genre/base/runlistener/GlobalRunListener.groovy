@@ -87,9 +87,6 @@ class GlobalRunListener implements ApplicationListener<ApplicationReadyEvent>{
                 userVORepo:userVORepo), periodicTrigger)
 
 
-
-
-
     }
 
     // this is a hack to make spring inject beans early
