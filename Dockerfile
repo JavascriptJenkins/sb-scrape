@@ -1,5 +1,4 @@
 FROM openjdk:8-jdk-alpine
-VOLUME /tmp
 
 COPY /target/app.jar /app/
 RUN chmod -R ag+w /app/ 
