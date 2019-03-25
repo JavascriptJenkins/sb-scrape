@@ -11,3 +11,12 @@ ChromeDriver driver = new ChromeDriver(options);
 http://chromedriver.chromium.org/capabilities
 
 https://robotninja.com/blog/introduction-using-selenium-docker-containers-end-end-testing/
+
+
+https://github.com/kubernetes/examples/tree/master/staging/selenium
+
+def check_browser(browser):
+  driver = webdriver.Remote(
+    command_executor='http://selenium-hub:4444/wd/hub',
+    desired_capabilities=getattr(DesiredCapabilities, browser)
+  )
