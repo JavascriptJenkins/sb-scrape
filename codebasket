@@ -7,3 +7,7 @@ options.setCapability("proxy", proxy);
 // Add a ChromeDriver-specific capability.
 options.addExtensions(new File("/path/to/extension.crx"));
 ChromeDriver driver = new ChromeDriver(options);
+
+http://chromedriver.chromium.org/capabilities
+
+https://robotninja.com/blog/introduction-using-selenium-docker-containers-end-end-testing/
