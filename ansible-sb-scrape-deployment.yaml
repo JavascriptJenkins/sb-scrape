@@ -1,0 +1,31 @@
+
+- hosts: 127.0.0.1
+  connection: local
+  tasks:
+
+
+    - name: build locally
+      docker_image:
+        path: .
+        name: javascriptjenkins/sb-scrape:latest
+        state: present
+#
+#
+#
+#- hosts: master
+#  become: yes
+#  tasks:
+#
+#    - name: delete existing sbscrape
+#      become: yes
+#      become_user: ubuntu
+#      shell: sudo kubectl delete deployment sbscrape -n=ingress
+#      args:
+#        chdir: $HOME
+#
+#    - name: create sbscrape
+#      become: yes
+#      become_user: ubuntu
+#      shell: sudo kubectl create -f https://raw.githubusercontent.com/JavascriptJenkins/mr-kube-baby/master/kube-cluster/yamls/sbscrape/sbscrape-deployment.yaml -n=ingress
+#      args:
+#        chdir: $HOME

@@ -20,3 +20,8 @@ def check_browser(browser):
     command_executor='http://selenium-hub:4444/wd/hub',
     desired_capabilities=getattr(DesiredCapabilities, browser)
   )
+
+
+  21:21:08.906 INFO [Hub.start] - Selenium Grid hub is up and running
+  21:21:08.911 INFO [Hub.start] - Nodes should register to http://10.244.1.36:4444/grid/register/
+  21:21:08.912 INFO [Hub.start] - Clients should connect to http://10.244.1.36:4444/wd/hub

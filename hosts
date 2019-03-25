@@ -1,0 +1,11 @@
+[masters]
+master ansible_host=198.211.99.50 ansible_user=root
+
+[workers]
+worker1 ansible_host=134.209.13.0 ansible_user=root
+worker2 ansible_host=178.62.234.231 ansible_user=root
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
+pythonpath=/usr/local/lib/python2.7/site-packages
+localhost ansible_connection=local
