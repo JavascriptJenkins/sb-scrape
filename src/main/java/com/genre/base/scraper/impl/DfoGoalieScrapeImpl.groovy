@@ -15,6 +15,7 @@ import org.openqa.selenium.chrome.ChromeOptions
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.env.Environment
 import org.springframework.stereotype.Component
 
 
@@ -37,6 +38,9 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
     @Autowired
     ExecuteGoalieScrape executeGoalieScrape
 
+    @Autowired
+    Environment environment
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass())
 
     void checkStartingGoalies(){
@@ -57,7 +61,9 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
 
         //        options.addArguments("start-maximized"); // https://stackoverflow.com/a/26283818/1689770
         options.addArguments("enable-automation"); // https://stackoverflow.com/a/43840128/1689770
-//        // options.addArguments("--headless"); // only if you are ACTUALLY running headless
+        if(Boolean.parseBoolean(environment.getProperty("run.headless"))){
+            options.addArguments("--headless"); // only if you are ACTUALLY running headless
+        }
 //        options.addArguments("--no-sandbox"); //https://stackoverflow.com/a/50725918/1689770
 //        options.addArguments("--disable-infobars"); //https://stackoverflow.com/a/43840128/1689770
 //        options.addArguments("--disable-dev-shm-usage"); //https://stackoverflow.com/a/50725918/1689770
