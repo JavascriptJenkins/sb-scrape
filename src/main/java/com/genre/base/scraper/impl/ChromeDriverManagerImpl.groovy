@@ -19,6 +19,23 @@ class ChromeDriverManagerImpl implements ChromeDriverManager{
         return driver
     }
 
+    RemoteWebDriver getRemoteChromeDriver(ChromeOptions options){
+        RemoteWebDriver driver = new RemoteWebDriver(new URL("http://selenium-hub:4444/wd/hub"), options);
+        return driver
+    }
+
+    void quitDriverRemote(RemoteWebDriver driver){
+        try {
+            if(driver != null){
+                driver.quit() // kill the browser brah first
+                driver.close() // kill the browser brah
+            }
+        } catch (Exception ex){
+            logger.info('----------> Caught exception trying to kill driver at end of successful scrape cycle. ')
+            logger.info('Exception: ',ex)
+        }
+    }
+
     void quitDriver(ChromeDriver driver){
         try {
             if(driver != null){

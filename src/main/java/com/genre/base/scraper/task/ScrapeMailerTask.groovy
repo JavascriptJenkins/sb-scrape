@@ -74,7 +74,7 @@ class ScrapeMailerTask implements Runnable {
 
         // Strip out only the UserVO objects from the HQL query that returned us an object array...
         goalieUsers.eachWithIndex { Object[] entry ->
-            userEmails.add(entry[0][0].emailAddress) // this is a UserVO type, getting the emailAddress is dirty but ok
+            userEmails.add(entry[0][0].email) // this is a UserVO type, getting the email is dirty but ok
         }
 
         StringBuilder goalieInfoSb = new StringBuilder()

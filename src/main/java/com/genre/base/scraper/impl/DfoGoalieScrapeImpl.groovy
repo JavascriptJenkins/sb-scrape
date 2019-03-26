@@ -12,10 +12,10 @@ import com.genre.base.utilities.SysUtil
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
+import org.openqa.selenium.remote.RemoteWebDriver
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.core.env.Environment
 import org.springframework.stereotype.Component
 
 
@@ -38,8 +38,6 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
     @Autowired
     ExecuteGoalieScrape executeGoalieScrape
 
-    @Autowired
-    Environment environment
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass())
 
@@ -59,18 +57,19 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
         ChromeOptions options = new ChromeOptions() // reference ChromeDriverManagerImpl for chrome options you can use
 
 
+        options.setHeadless(true)
         //        options.addArguments("start-maximized"); // https://stackoverflow.com/a/26283818/1689770
         options.addArguments("enable-automation"); // https://stackoverflow.com/a/43840128/1689770
-        if(Boolean.parseBoolean(environment.getProperty("run.headless"))){
-            options.addArguments("--headless"); // only if you are ACTUALLY running headless
-        }
-//        options.addArguments("--no-sandbox"); //https://stackoverflow.com/a/50725918/1689770
-//        options.addArguments("--disable-infobars"); //https://stackoverflow.com/a/43840128/1689770
-//        options.addArguments("--disable-dev-shm-usage"); //https://stackoverflow.com/a/50725918/1689770
-//        options.addArguments("--disable-browser-side-navigation"); //https://stackoverflow.com/a/49123152/1689770
-//        options.addArguments("--disable-gpu"); //https://stackoverflow.com/questions/51959986/how-to-solve-selenium-chromedriver-timed-out-receiving-message-from-renderer-exc
+        //options.addArguments("command-executor=http://selenium-hub:4444/wd/hub"); // https://stackoverflow.com/a/43840128/1689770
+        options.addArguments("--headless"); // only if you are ACTUALLY running headless
+        options.addArguments("--remote-debugging-port=9222"); // only if you are ACTUALLY running headless
 
-
+        options.addArguments("--no-sandbox"); //https://stackoverflow.com/a/50725918/1689770
+        options.addArguments("--whitelisted-ips="); //https://stackoverflow.com/a/50725918/1689770
+        options.addArguments("--disable-infobars"); //https://stackoverflow.com/a/43840128/1689770
+        options.addArguments("--disable-dev-shm-usage"); //https://stackoverflow.com/a/50725918/1689770
+        options.addArguments("--disable-browser-side-navigation"); //https://stackoverflow.com/a/49123152/1689770
+        options.addArguments("--disable-gpu"); //https://stackoverflow.com/questions/51959986/how-to-solve-selenium-chromedriver-timed-out-receiving-message-from-renderer-exc
 
 
         // infinite loop
@@ -78,22 +77,23 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
             logger.info('-----> In loop, waiting for scrape to start. ')
             Thread.sleep(sysUtil.getRandomNumber()) // sleep random time before scraping
             logger.info('-----> In loop, waiting over.  Scrape Started. ')
-            ChromeDriver driver = null
-            driver = chromeDriverManager.getChromeDriver(options)
+            RemoteWebDriver driver = null
+            //ChromeDriver driver = null
+            driver = chromeDriverManager.getRemoteChromeDriver(options)
             success = executeGoalieScrape.executeGoalieScrape(url,driver)
             if(success){
                 logger.info('-----> Scrape success.  Extracting data. ')
                 extractData(driver)
-                chromeDriverManager.quitDriver(driver)
+                chromeDriverManager.quitDriverRemote(driver)
             } else {
                 logger.info('-----> Scrape failed.  Trying again. ')
-                chromeDriverManager.quitDriver(driver)
+                chromeDriverManager.quitDriverRemote(driver)
             }
        // }
     }
 
     // extract data from the page and save it to database
-    void extractData(ChromeDriver driver){
+    void extractData(RemoteWebDriver driver){
 
         try{
             // dfoGoaliePage.startingGoaliesCard[0].text
@@ -163,7 +163,7 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
 
             }
         } catch (Exception ex){
-            logger.info('--------> Caught exeption while extracting data.  Ignoring and will try again on next loop. ')
+            logger.info('--------> Caught exeption while extracting data.  Ignoring and will try again on next loop. '+ex)
         }
 
     }
