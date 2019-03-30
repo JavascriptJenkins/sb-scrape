@@ -19,6 +19,7 @@ import org.openqa.selenium.remote.RemoteWebDriver
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.env.Environment
 import org.springframework.stereotype.Component
 
 
@@ -48,6 +49,9 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
     @Autowired
     DatapointFinder datapointFinder
 
+    @Autowired
+    Environment environment
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass())
 
     void checkStartingGoalies(){
@@ -63,22 +67,16 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
 
         boolean success = false
 
-        ChromeOptions options = new ChromeOptions() // reference ChromeDriverManagerImpl for chrome options you can use
+        ChromeOptions options = null
+        boolean runningLocal = false
 
-
-        options.setHeadless(true)
-        //        options.addArguments("start-maximized"); // https://stackoverflow.com/a/26283818/1689770
-        options.addArguments("enable-automation"); // https://stackoverflow.com/a/43840128/1689770
-        //options.addArguments("command-executor=http://selenium-hub:4444/wd/hub"); // https://stackoverflow.com/a/43840128/1689770
-        options.addArguments("--headless"); // only if you are ACTUALLY running headless
-        options.addArguments("--remote-debugging-port=9222"); // only if you are ACTUALLY running headless
-
-        options.addArguments("--no-sandbox"); //https://stackoverflow.com/a/50725918/1689770
-        options.addArguments("--whitelisted-ips="); //https://stackoverflow.com/a/50725918/1689770
-        options.addArguments("--disable-infobars"); //https://stackoverflow.com/a/43840128/1689770
-        options.addArguments("--disable-dev-shm-usage"); //https://stackoverflow.com/a/50725918/1689770
-        options.addArguments("--disable-browser-side-navigation"); //https://stackoverflow.com/a/49123152/1689770
-        options.addArguments("--disable-gpu"); //https://stackoverflow.com/questions/51959986/how-to-solve-selenium-chromedriver-timed-out-receiving-message-from-renderer-exc
+        // if running headless, we assume we are running in remote selenium grid
+        if(Boolean.parseBoolean(environment.getProperty('run.headless'))){
+            options = getRemoteDriverOptions()
+        } else {
+            options = getLocalDriverOptions()
+            runningLocal = true
+        }
 
 
         // infinite loop
@@ -88,7 +86,12 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
             logger.info('-----> In loop, waiting over.  Scrape Started. ')
             RemoteWebDriver driver = null
             //ChromeDriver driver = null
-            driver = chromeDriverManager.getRemoteChromeDriver(options)
+            if(runningLocal){
+                driver = chromeDriverManager.getChromeDriver(options)
+            } else {
+                driver = chromeDriverManager.getRemoteChromeDriver(options)
+            }
+
             success = executeGoalieScrape.executeGoalieScrape(url,driver)
             if(success){
                 logger.info('-----> Scrape success.  Extracting data. ')
@@ -223,4 +226,47 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
      //   GoalieVO goalieVO = goalieVORepo.findB
 
     }
+
+    ChromeOptions getLocalDriverOptions(){
+        ChromeOptions options = new ChromeOptions() // reference ChromeDriverManagerImpl for chrome options you can use
+
+
+        options.setHeadless(true)
+        //        options.addArguments("start-maximized"); // https://stackoverflow.com/a/26283818/1689770
+        options.addArguments("enable-automation"); // https://stackoverflow.com/a/43840128/1689770
+        //options.addArguments("command-executor=http://selenium-hub:4444/wd/hub"); // https://stackoverflow.com/a/43840128/1689770
+//        options.addArguments("--headless"); // only if you are ACTUALLY running headless
+//        options.addArguments("--remote-debugging-port=9222"); // only if you are ACTUALLY running headless
+//
+//        options.addArguments("--no-sandbox"); //https://stackoverflow.com/a/50725918/1689770
+//        options.addArguments("--whitelisted-ips="); //https://stackoverflow.com/a/50725918/1689770
+//        options.addArguments("--disable-infobars"); //https://stackoverflow.com/a/43840128/1689770
+//        options.addArguments("--disable-dev-shm-usage"); //https://stackoverflow.com/a/50725918/1689770
+//        options.addArguments("--disable-browser-side-navigation"); //https://stackoverflow.com/a/49123152/1689770
+//        options.addArguments("--disable-gpu"); //https://stackoverflow.com/questions/51959986/how-to-solve-selenium-chromedriver-timed-out-receiving-message-from-renderer-exc
+        return options
+    }
+
+
+    ChromeOptions getRemoteDriverOptions(){
+        ChromeOptions options = new ChromeOptions() // reference ChromeDriverManagerImpl for chrome options you can use
+
+
+        options.setHeadless(true)
+        //        options.addArguments("start-maximized"); // https://stackoverflow.com/a/26283818/1689770
+        options.addArguments("enable-automation"); // https://stackoverflow.com/a/43840128/1689770
+        //options.addArguments("command-executor=http://selenium-hub:4444/wd/hub"); // https://stackoverflow.com/a/43840128/1689770
+        options.addArguments("--headless"); // only if you are ACTUALLY running headless
+        options.addArguments("--remote-debugging-port=9222"); // only if you are ACTUALLY running headless
+
+        options.addArguments("--no-sandbox"); //https://stackoverflow.com/a/50725918/1689770
+        options.addArguments("--whitelisted-ips="); //https://stackoverflow.com/a/50725918/1689770
+        options.addArguments("--disable-infobars"); //https://stackoverflow.com/a/43840128/1689770
+        options.addArguments("--disable-dev-shm-usage"); //https://stackoverflow.com/a/50725918/1689770
+        options.addArguments("--disable-browser-side-navigation"); //https://stackoverflow.com/a/49123152/1689770
+        options.addArguments("--disable-gpu"); //https://stackoverflow.com/questions/51959986/how-to-solve-selenium-chromedriver-timed-out-receiving-message-from-renderer-exc
+        return options
+    }
+
+
 }

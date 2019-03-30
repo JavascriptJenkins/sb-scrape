@@ -16,6 +16,7 @@ import com.genre.base.utilities.SysUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.ApplicationListener
+import org.springframework.core.env.Environment
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 import org.springframework.scheduling.support.PeriodicTrigger
 import org.springframework.stereotype.Component
@@ -66,6 +67,9 @@ class GlobalRunListener implements ApplicationListener<ApplicationReadyEvent>{
     @Autowired
     DatapointFinder datapointFinder
 
+    @Autowired
+    Environment environment
+
     @Override
     void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         println("THE APP STARTED OMG")
@@ -87,7 +91,8 @@ class GlobalRunListener implements ApplicationListener<ApplicationReadyEvent>{
                 sysUtil:sysUtil,
                 chromeDriverManager:chromeDriverManager,
                 executeGoalieScrape:executeGoalieScrape,
-                datapointFinder: datapointFinder), periodicTrigger)
+                datapointFinder: datapointFinder,
+                environment: environment), periodicTrigger)
 
 
 //        threadPoolTaskScheduler.schedule(new ScrapeMailerTask(
