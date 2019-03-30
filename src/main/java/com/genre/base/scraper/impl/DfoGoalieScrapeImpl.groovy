@@ -134,20 +134,6 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
                 // goalie name, teamName, isConfirmed, dateTimeOfGame
                 NhlGameVO nhlGameVO = datapointFinder.getGoalieData(dataPoints)
 
-
-//             //   String gameDateTime = dataPoints[1]
-//                String gameDateTime = pageData.dateTimeOfGame
-//             //   String goalieName = dataPoints[3]
-//                String goalieName = pageData.name
-//             //   String isConfirmed = dataPoints[5]
-//                String isConfirmed = pageData.isConfirmed
-//                int isConfirmedInt = 0
-//
-//                // if goalie is confirmed, flip integer to true (1)
-//                if(ScrapeConstants.CONFIRMED.equals(isConfirmed)){
-//                    isConfirmedInt = 1
-//                }
-
                 for(GoalieVO goalieVOFromPage : nhlGameVO.getGoalieVOList() ){
                     runCheck(goalieVOFromPage, nhlGameVO)
                 }
@@ -175,35 +161,28 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
                 nhlGameVORepo.findByDateTimeOfGame(nhlGameVOFromPage.getDateTimeOfGame())
         //goalieVOFromPage.setGoalie_id(0)
         // if no existing game, handle the situation
+
+
+        // if an nhl game comes back, and it has goalies,
+        // and those goalies have a different conformation than the
+        // page object
         if(nhlGameVO != null){
             for(GoalieVO goalieVO:nhlGameVO.getGoalieVOList()){
                 //nhlGameVO.setNhl_game_id(0) // make hibernate happy
                 // if data comes back from the database and isConfirmed == 0, then
                 // check to see if isConfirmed == on the scraped data and update it if so
                 if(goalieVO != null
-                        && goalieVO.isConfirmed == 0
-                        && goalieVOFromPage.isConfirmed == 1){
+                        && (goalieVO.isConfirmed == 0 && goalieVOFromPage.isConfirmed == 1)
+                        && (goalieVO.goalie_id == goalieVOFromPage.goalie_id)){
                     // data needs to be updated - goalie is confirmed now
                     goalieVO.isConfirmed = goalieVOFromPage.isConfirmed // set to new value from page
                     goalieVO.updateTimeStamp = new Date() // update the timestamp
                     goalieVORepo.save(goalieVO) // save the updated object
 
                 } else if(goalieVO != null
-                        && (goalieVO.isConfirmed == goalieVOFromPage.isConfirmed)){
+                        && (goalieVO.isConfirmed == goalieVOFromPage.isConfirmed)
+                        && (goalieVO.goalie_id == goalieVOFromPage.goalie_id)){
                     // do nothing - data from page matches data from database
-                } else {
-                    // no data came back from database - this means we have a new goalie record to insert
-                    // save the goalie to database
-                    goalieVORepo.save(new GoalieVO(
-                            nhlGameVO : nhlGameVO,
-                            name:goalieVOFromPage.name,
-//                        dateTimeOfGame: gameDateTime,
-                            isConfirmed:goalieVOFromPage.isConfirmed,
-                            updateTimeStamp: new Date(),
-                            createTimeStamp: new Date(),
-                            wasSentToAllEmails: 0,
-                            goalie_id: 0
-                    ))
                 }
             }
         } else {

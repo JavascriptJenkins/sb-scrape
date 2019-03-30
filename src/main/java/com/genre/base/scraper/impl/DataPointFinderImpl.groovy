@@ -64,11 +64,11 @@ class DataPointFinderImpl implements DatapointFinder {
 
     void setNhlGameProperties(NhlGameVO nhlGameVO, String entry, int i){
         // set nhl game properties
-        if(entry.contains('at') && i <= 1){
+        if(entry.contains('at') && i <= 1 && sysUtil.isAlpha(entry)){
             nhlGameVO.setGameDesc(entry)
         }
         if(entry.contains('pm') || entry.contains('am')
-                && i <= 2){
+                && i <= 2 && !sysUtil.isAlpha(entry)){
             nhlGameVO.setDateTimeOfGame(entry)
         }
     }
@@ -79,7 +79,7 @@ class DataPointFinderImpl implements DatapointFinder {
         if(k == 0){
             // set 1st goalie's properties
             if(sysUtil.isAlpha(entry)
-                    && (!entry.contains('Confirmed') || !entry.contains('Unconfirmed'))
+                    && (!entry.contains('Confirmed') && !entry.contains('Unconfirmed'))
                     && i <= 3){
                 goalieVO.setName(entry)
             }
@@ -93,7 +93,7 @@ class DataPointFinderImpl implements DatapointFinder {
         } else {
             // set 2nd goalie's properties
             if(sysUtil.isAlpha(entry)
-                    && (!entry.contains('Confirmed') || !entry.contains('Unconfirmed'))
+                    && (!entry.contains('Confirmed') && !entry.contains('Unconfirmed'))
                     && i <= 16 &&
                     i > 10){
                 goalieVO.setName(entry)
