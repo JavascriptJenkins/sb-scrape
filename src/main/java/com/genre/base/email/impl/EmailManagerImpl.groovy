@@ -30,7 +30,11 @@ class EmailManagerImpl implements EmailManager {
         mailServerProperties.put("mail.smtp.auth", "true")
         mailServerProperties.put("mail.smtp.starttls.enable", "true")
         mailServerProperties.put("mail.smtp.ssl.trust", "smtp.gmail.com")
+        //mailServerProperties.put("mail.smtp.user", "craigslistbabygurl@gmail.com")
+        //mailServerProperties.put("mail.smtp.password", "scrape11")
         System.out.println("Mail Server Properties have been setup successfully..")
+
+
 
         // Step2
         System.out.println("\n\n 2nd ===> get Mail Session..")
@@ -38,6 +42,7 @@ class EmailManagerImpl implements EmailManager {
         generateMailMessage = new MimeMessage(getMailSession)
 
         for(String email: emailList){
+            System.out.println("In email loop: "+email)
             generateMailMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(email))
         }
 

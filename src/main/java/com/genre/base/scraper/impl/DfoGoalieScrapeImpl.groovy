@@ -1,13 +1,16 @@
 package com.genre.base.scraper.impl
 
 import com.genre.base.scraper.ChromeDriverManager
+import com.genre.base.scraper.DatapointFinder
 import com.genre.base.scraper.DfoGoalieScrape
 import com.genre.base.scraper.ScrapeManager
 import com.genre.base.scraper.constants.ScrapeConstants
 import com.genre.base.scraper.executers.ExecuteGoalieScrape
 import com.genre.base.scraper.objects.page.DfoGoaliePage
 import com.genre.base.scraper.repo.GoalieVORepo
+import com.genre.base.scraper.repo.NhlGameVORepo
 import com.genre.base.scraper.repo.objects.nhl.GoalieVO
+import com.genre.base.scraper.repo.objects.nhl.NhlGameVO
 import com.genre.base.utilities.SysUtil
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.chrome.ChromeDriver
@@ -30,6 +33,9 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
     GoalieVORepo goalieVORepo
 
     @Autowired
+    NhlGameVORepo nhlGameVORepo
+
+    @Autowired
     SysUtil sysUtil
 
     @Autowired
@@ -38,6 +44,9 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
     @Autowired
     ExecuteGoalieScrape executeGoalieScrape
 
+
+    @Autowired
+    DatapointFinder datapointFinder
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass())
 
@@ -110,7 +119,7 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
             for(WebElement element : allGoaliesList){
 
                 logger.info('Got another goalie element')
-
+                // each one of these has goalie data for 2 goalies/1 game
                 String goalieText = element.text
                 ArrayList dataPoints = goalieText.split("\\r?\\n") // split by /n symbol
                 // ArrayList dataPoints = goalieText.findAll( /\n+/ )*.toString()
@@ -120,50 +129,30 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
                 // This seems to be consistent.
 
                 // goalie name, teamName, isConfirmed, dateTimeOfGame
+                NhlGameVO nhlGameVO = datapointFinder.getGoalieData(dataPoints)
 
-                String gameDateTime = dataPoints[1]
-                String goalieName = dataPoints[3]
-                String isConfirmed = dataPoints[5]
-                int isConfirmedInt = 0
 
-                // if goalie is confirmed, flip integer to true (1)
-                if(ScrapeConstants.CONFIRMED.equals(isConfirmed)){
-                    isConfirmedInt = 1
+//             //   String gameDateTime = dataPoints[1]
+//                String gameDateTime = pageData.dateTimeOfGame
+//             //   String goalieName = dataPoints[3]
+//                String goalieName = pageData.name
+//             //   String isConfirmed = dataPoints[5]
+//                String isConfirmed = pageData.isConfirmed
+//                int isConfirmedInt = 0
+//
+//                // if goalie is confirmed, flip integer to true (1)
+//                if(ScrapeConstants.CONFIRMED.equals(isConfirmed)){
+//                    isConfirmedInt = 1
+//                }
+
+                for(GoalieVO goalieVOFromPage : nhlGameVO.getGoalieVOList() ){
+                    runCheck(goalieVOFromPage, nhlGameVO)
                 }
 
-
-                // search to see if we already have this goalie data
-                GoalieVO goalieVO = goalieVORepo.findByDateTimeOfGameAndName(gameDateTime, goalieName)
-
-                // if data comes back from the database and isConfirmed == 0, then
-                // check to see if isConfirmed == on the scraped data and update it if so
-                if(goalieVO != null
-                        && goalieVO.isConfirmed == 0
-                        && isConfirmedInt == 1){
-                    // data needs to be updated - goalie is confirmed now
-                    goalieVO.isConfirmed = isConfirmedInt // set to new value from page
-                    goalieVO.updateTimeStamp = new Date() // update the timestamp
-                    goalieVORepo.save(goalieVO) // save the updated object
-
-                } else if(goalieVO != null
-                        && (goalieVO.isConfirmed == isConfirmedInt)){
-                    // do nothing - data from page matches data from database
-                } else {
-                    // no data came back from database - this means we have a new goalie record to insert
-                    // save the goalie to database
-                    goalieVORepo.save(new GoalieVO(
-                            name:goalieName,
-                            dateTimeOfGame: gameDateTime,
-                            isConfirmed:isConfirmedInt,
-                            updateTimeStamp: new Date(),
-                            createTimeStamp: new Date(),
-                            wasSentToAllEmails: 0
-                    ))
-                }
 
             }
         } catch (Exception ex){
-            logger.info('--------> Caught exeption while extracting data.  Ignoring and will try again on next loop. '+ex)
+            logger.info('--------> Caught exeption while extracting data.  Ignoring and will try again on next loop, '+ex)
         }
 
     }
@@ -171,5 +160,67 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
     @Override
     void run() {
         checkStartingGoalies()
+    }
+
+
+    void runCheck(GoalieVO goalieVOFromPage, NhlGameVO nhlGameVOFromPage){
+        // search to see if we already have this goalie data
+//        GoalieVO goalieVO =
+//                goalieVORepo.findByDateTimeOfGameAndName(gameDateTime, goalieVOFromPage.name)
+
+        NhlGameVO nhlGameVO =
+                nhlGameVORepo.findByDateTimeOfGame(nhlGameVOFromPage.getDateTimeOfGame())
+        //goalieVOFromPage.setGoalie_id(0)
+        // if no existing game, handle the situation
+        if(nhlGameVO != null){
+            for(GoalieVO goalieVO:nhlGameVO.getGoalieVOList()){
+                //nhlGameVO.setNhl_game_id(0) // make hibernate happy
+                // if data comes back from the database and isConfirmed == 0, then
+                // check to see if isConfirmed == on the scraped data and update it if so
+                if(goalieVO != null
+                        && goalieVO.isConfirmed == 0
+                        && goalieVOFromPage.isConfirmed == 1){
+                    // data needs to be updated - goalie is confirmed now
+                    goalieVO.isConfirmed = goalieVOFromPage.isConfirmed // set to new value from page
+                    goalieVO.updateTimeStamp = new Date() // update the timestamp
+                    goalieVORepo.save(goalieVO) // save the updated object
+
+                } else if(goalieVO != null
+                        && (goalieVO.isConfirmed == goalieVOFromPage.isConfirmed)){
+                    // do nothing - data from page matches data from database
+                } else {
+                    // no data came back from database - this means we have a new goalie record to insert
+                    // save the goalie to database
+                    goalieVORepo.save(new GoalieVO(
+                            nhlGameVO : nhlGameVO,
+                            name:goalieVOFromPage.name,
+//                        dateTimeOfGame: gameDateTime,
+                            isConfirmed:goalieVOFromPage.isConfirmed,
+                            updateTimeStamp: new Date(),
+                            createTimeStamp: new Date(),
+                            wasSentToAllEmails: 0,
+                            goalie_id: 0
+                    ))
+                }
+            }
+        } else {
+
+            nhlGameVOFromPage.setCreateTimeStamp(new Date())
+
+            for(GoalieVO goalieVO : nhlGameVOFromPage.getGoalieVOList()){
+                goalieVO.setNhlGameVO(nhlGameVOFromPage)
+            }
+
+            NhlGameVO saveResult = nhlGameVORepo.save(nhlGameVOFromPage)
+            println(saveResult)
+
+
+        }
+
+
+
+
+     //   GoalieVO goalieVO = goalieVORepo.findB
+
     }
 }

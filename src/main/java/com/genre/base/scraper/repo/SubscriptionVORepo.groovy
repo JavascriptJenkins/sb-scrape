@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component
 interface SubscriptionVORepo extends CrudRepository<SubscriptionVO, Long>{
 
     // NOTE: GoalieVO in this query is the name of the object and not the table
-    @Query("SELECT g FROM GoalieVO g WHERE g.dateTimeOfGame = :dateTimeOfGame and g.name = :name")
-    SubscriptionVO findByDateTimeOfGameAndName(
-            @Param("dateTimeOfGame") String dateTimeOfGame,
-            @Param("name") String name)
+//    @Query("SELECT g FROM GoalieVO g WHERE g.dateTimeOfGame = :dateTimeOfGame and g.name = :name")
+//    SubscriptionVO findByDateTimeOfGameAndName(
+//            @Param("dateTimeOfGame") String dateTimeOfGame,
+//            @Param("name") String name)
 
 }

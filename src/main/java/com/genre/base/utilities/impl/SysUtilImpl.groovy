@@ -27,5 +27,18 @@ class SysUtilImpl implements SysUtil {
         return result
     }
 
+    boolean isAlpha(String name) {
+        name = name.replaceAll("\\s+","")
+        char[] chars = name.trim().toCharArray();
+
+        for (char c : chars) {
+            if(!Character.isLetter(c)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 
 }

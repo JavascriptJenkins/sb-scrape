@@ -9,4 +9,6 @@ interface SysUtil {
 
     int getRandomNumber()
 
+    boolean isAlpha(String name)
+
 }

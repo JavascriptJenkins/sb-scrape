@@ -2,12 +2,14 @@ package com.genre.base.runlistener
 
 import com.genre.base.email.EmailManager
 import com.genre.base.scraper.ChromeDriverManager
+import com.genre.base.scraper.DatapointFinder
 import com.genre.base.scraper.DfoGoalieScrape
 import com.genre.base.scraper.MLBcomScrape
 import com.genre.base.scraper.ScrapeManager
 import com.genre.base.scraper.executers.ExecuteGoalieScrape
 import com.genre.base.scraper.impl.DfoGoalieScrapeImpl
 import com.genre.base.scraper.repo.GoalieVORepo
+import com.genre.base.scraper.repo.NhlGameVORepo
 import com.genre.base.scraper.repo.UserVORepo
 import com.genre.base.scraper.task.ScrapeMailerTask
 import com.genre.base.utilities.SysUtil
@@ -41,6 +43,9 @@ class GlobalRunListener implements ApplicationListener<ApplicationReadyEvent>{
     GoalieVORepo goalieVORepo
 
     @Autowired
+    NhlGameVORepo nhlGameVORepo
+
+    @Autowired
     SysUtil sysUtil
 
     @Autowired
@@ -57,6 +62,9 @@ class GlobalRunListener implements ApplicationListener<ApplicationReadyEvent>{
 
     @Autowired
     UserVORepo userVORepo
+
+    @Autowired
+    DatapointFinder datapointFinder
 
     @Override
     void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
@@ -75,16 +83,18 @@ class GlobalRunListener implements ApplicationListener<ApplicationReadyEvent>{
         threadPoolTaskScheduler.schedule(new DfoGoalieScrapeImpl(
                 scrapeManager:scrapeManager,
                 goalieVORepo:goalieVORepo,
+                nhlGameVORepo:nhlGameVORepo,
                 sysUtil:sysUtil,
                 chromeDriverManager:chromeDriverManager,
-                executeGoalieScrape:executeGoalieScrape), periodicTrigger)
+                executeGoalieScrape:executeGoalieScrape,
+                datapointFinder: datapointFinder), periodicTrigger)
 
 
-        threadPoolTaskScheduler.schedule(new ScrapeMailerTask(
-                goalieVORepo:goalieVORepo,
-                emailManager: emailManager,
-                sysUtil:sysUtil,
-                userVORepo:userVORepo), periodicTrigger)
+//        threadPoolTaskScheduler.schedule(new ScrapeMailerTask(
+//                goalieVORepo:goalieVORepo,
+//                emailManager: emailManager,
+//                sysUtil:sysUtil,
+//                userVORepo:userVORepo), periodicTrigger)
 
 
     }
