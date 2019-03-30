@@ -40,5 +40,9 @@ class SysUtilImpl implements SysUtil {
         return true;
     }
 
+    String removeWhiteSpace(String inputString){
+        return inputString.replaceAll("\\s+","")
+    }
+
 
 }

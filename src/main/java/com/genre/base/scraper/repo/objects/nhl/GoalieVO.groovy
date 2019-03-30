@@ -33,11 +33,14 @@ class GoalieVO implements Serializable {
     @JsonProperty
     Long goalie_id
 
-//    @JsonProperty
-//    Long nhl_game_id
-
     @JsonProperty
     String name
+
+    @JsonProperty
+    String source
+
+    @JsonProperty
+    String goalieDesc
 
     @JsonProperty
     String teamName

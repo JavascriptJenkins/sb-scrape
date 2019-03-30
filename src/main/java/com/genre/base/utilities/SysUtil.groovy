@@ -11,4 +11,6 @@ interface SysUtil {
 
     boolean isAlpha(String name)
 
+    String removeWhiteSpace(String inputString)
+
 }

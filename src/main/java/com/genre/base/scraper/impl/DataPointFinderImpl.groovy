@@ -14,6 +14,10 @@ class DataPointFinderImpl implements DatapointFinder {
     @Autowired
     SysUtil sysUtil
 
+    int FIRST_TEAM = 0
+    int SECOND_TEAM = 1
+    int CONFIRMED = 1
+
     NhlGameVO getGoalieData(ArrayList datapoints){
         NhlGameVO nhlGameVO = new NhlGameVO()
         List<GoalieVO> goalieVOList = new ArrayList<>()
@@ -73,11 +77,22 @@ class DataPointFinderImpl implements DatapointFinder {
         }
     }
 
+    // NOTE:  this below code needs to be in the last if check of each goalie hydration below:
+
+    //                goalieVO.setIsHydrated(true)
+   //                 return goalieVO
+
     GoalieVO setGoalieProperties(GoalieVO goalieVO, String entry, int i, int k){
 
         // k is the amount of goalies we need to parse out
         if(k == 0){
             // set 1st goalie's properties
+
+            // get the team name
+            if(entry.contains('at') && i <= 1 && sysUtil.isAlpha(entry)){
+                goalieVO.setTeamName(extractTeamName(entry, FIRST_TEAM))
+            }
+
             if(sysUtil.isAlpha(entry)
                     && (!entry.contains('Confirmed') && !entry.contains('Unconfirmed'))
                     && i <= 3){
@@ -87,11 +102,38 @@ class DataPointFinderImpl implements DatapointFinder {
             if((entry.contains('Confirmed') || entry.contains('Unconfirmed'))
                     && i <= 6){
                 goalieVO.setIsConfirmed(checkConfirmed(entry))
+            }
+
+            // if confirmed, extract the goalieDesc
+            if(goalieVO.getIsConfirmed() == CONFIRMED
+                    && i <=12 && entry.contains('will start')){
+
+                goalieVO.setGoalieDesc(entry)
+            }
+
+            // if confirmed, extract the confirmation source
+            if(goalieVO.getIsConfirmed() == CONFIRMED
+                    && i <=14 && entry.contains('Source:')){
+
+                goalieVO.setSource(entry)
+
                 goalieVO.setIsHydrated(true)
                 return goalieVO
             }
+
+
+
+
+
+
         } else {
             // set 2nd goalie's properties
+
+            // get the team name
+            if(entry.contains('at') && i <= 1 && sysUtil.isAlpha(entry)){
+                goalieVO.setTeamName(extractTeamName(entry, SECOND_TEAM))
+            }
+
             if(sysUtil.isAlpha(entry)
                     && (!entry.contains('Confirmed') && !entry.contains('Unconfirmed'))
                     && i <= 16 &&
@@ -103,6 +145,23 @@ class DataPointFinderImpl implements DatapointFinder {
                     && i <= 18 &&
                     i > 10){
                 goalieVO.setIsConfirmed(checkConfirmed(entry))
+            }
+
+            // if confirmed, extract the goalieDesc
+            if(goalieVO.getIsConfirmed() == CONFIRMED
+                    && i <=25 && entry.contains('will start')&&
+                    i > 10){
+
+                goalieVO.setGoalieDesc(entry)
+            }
+
+            // if confirmed, extract the confirmation source
+            if(goalieVO.getIsConfirmed() == CONFIRMED
+                    && i <=27 && entry.contains('Source:')&&
+                    i > 10){
+
+                goalieVO.setSource(entry)
+
                 goalieVO.setIsHydrated(true)
                 return goalieVO
             }
@@ -119,6 +178,13 @@ class DataPointFinderImpl implements DatapointFinder {
         } else {
             return 0
         }
+    }
+
+    String extractTeamName(String entry, int teamNameIndex){
+        //String beforesplit = sysUtil.removeWhiteSpace(entry)
+        String[] strings = entry.split("at", 2)
+        String teamName = strings[teamNameIndex]
+        return teamName.trim()
     }
 
 
