@@ -11,7 +11,7 @@ import javax.mail.internet.AddressException
 @Component
 interface EmailManager {
 
-    void generateAndSendEmail(String dataToSend, ArrayList<String> emailList) throws AddressException, MessagingException
+    void generateAndSendEmail(String dataToSend, ArrayList<String> emailList, String subject) throws AddressException, MessagingException
 
     String formatCraigslistObjectsToEmailHTML(ArrayList<ScraperObject> craigslistObjects)
 

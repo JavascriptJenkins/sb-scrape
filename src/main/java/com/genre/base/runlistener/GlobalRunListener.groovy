@@ -10,8 +10,10 @@ import com.genre.base.scraper.executers.ExecuteGoalieScrape
 import com.genre.base.scraper.impl.DfoGoalieScrapeImpl
 import com.genre.base.scraper.repo.GoalieVORepo
 import com.genre.base.scraper.repo.NhlGameVORepo
+import com.genre.base.scraper.repo.SubscriptionVORepo
 import com.genre.base.scraper.repo.UserVORepo
 import com.genre.base.scraper.task.ScrapeMailerTask
+import com.genre.base.scraper.testdata.TestData
 import com.genre.base.utilities.SysUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.event.ApplicationReadyEvent
@@ -70,6 +72,12 @@ class GlobalRunListener implements ApplicationListener<ApplicationReadyEvent>{
     @Autowired
     Environment environment
 
+    @Autowired
+    TestData testData
+
+    @Autowired
+    SubscriptionVORepo subscriptionVORepo
+
     @Override
     void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         println("THE APP STARTED OMG")
@@ -83,6 +91,8 @@ class GlobalRunListener implements ApplicationListener<ApplicationReadyEvent>{
         PeriodicTrigger periodicTrigger = new PeriodicTrigger(1000, TimeUnit.MICROSECONDS)
         periodicTrigger.setFixedRate(false)
 
+        // insert test/initialization data
+        testData.insertUserSubscriptionTestData()
 
         threadPoolTaskScheduler.schedule(new DfoGoalieScrapeImpl(
                 scrapeManager:scrapeManager,
@@ -95,11 +105,12 @@ class GlobalRunListener implements ApplicationListener<ApplicationReadyEvent>{
                 environment: environment), periodicTrigger)
 
 
-//        threadPoolTaskScheduler.schedule(new ScrapeMailerTask(
-//                goalieVORepo:goalieVORepo,
-//                emailManager: emailManager,
-//                sysUtil:sysUtil,
-//                userVORepo:userVORepo), periodicTrigger)
+        threadPoolTaskScheduler.schedule(new ScrapeMailerTask(
+                goalieVORepo:goalieVORepo,
+                emailManager: emailManager,
+                sysUtil:sysUtil,
+                userVORepo:userVORepo,
+                subscriptionVORepo: subscriptionVORepo), periodicTrigger)
 
 
     }

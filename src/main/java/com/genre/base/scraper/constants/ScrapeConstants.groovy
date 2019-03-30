@@ -9,7 +9,7 @@ class ScrapeConstants {
 
     static NHL_STARTING_GOALIE_SCRAPE_URL = "https://www.dailyfaceoff.com/starting-goalies/"
 
-    static DFO_GOALIE_SCRAPE_TYPE_INT = 1
+    static DFO_GOALIE_SCRAPE_TYPE_LONG = 1
 
 
 }

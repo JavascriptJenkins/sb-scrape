@@ -15,4 +15,9 @@ interface SubscriptionVORepo extends CrudRepository<SubscriptionVO, Long>{
 //            @Param("dateTimeOfGame") String dateTimeOfGame,
 //            @Param("name") String name)
 
+    @Query("FROM SubscriptionVO s WHERE s.subscriptionTypeVO.subscription_type_id = :subTypeID and s.userVO.active = 1")
+    Collection<SubscriptionVO> getSubscriptionsByIdOnlyWithActiveUser(@Param("subTypeID") long subTypeID)
+
+
+
 }

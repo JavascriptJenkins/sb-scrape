@@ -3,6 +3,7 @@ package com.genre.base.scraper.repo.objects.nhl
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
+import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.ElementCollection
 import javax.persistence.Entity
@@ -22,6 +23,9 @@ import javax.validation.constraints.Size
 @Entity
 @Table(name="user")
 class UserVO implements Serializable {
+
+    @OneToMany(mappedBy="userVO",cascade=CascadeType.ALL)
+    List<SubscriptionVO> subscriptionVOList;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -40,7 +40,7 @@ interface GoalieVORepo extends CrudRepository<GoalieVO, Long>{
                     rollbackFor = Throwable.class
             )
     @Modifying
-    @Query("update GoalieVO g set g.wasSentToAllEmails =:wasSentToAllEmails where g.id =:id")
-    void updateGoalieVOToggle(@Param("wasSentToAllEmails") int wasSentToAllEmails, @Param("id") int id)
+    @Query("update GoalieVO g set g.wasSentToAllEmails =:wasSentToAllEmails where g.goalie_id =:goalie_id")
+    void updateGoalieVOToggle(@Param("wasSentToAllEmails") int wasSentToAllEmails, @Param("goalie_id") long goalie_id)
 
 }

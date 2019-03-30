@@ -44,5 +44,13 @@ class SysUtilImpl implements SysUtil {
         return inputString.replaceAll("\\s+","")
     }
 
+    long get1971epochMs(){
+        return 31557600000
+    }
+
+    long get2030epochMs(){
+        return 1893477600000
+    }
+
 
 }

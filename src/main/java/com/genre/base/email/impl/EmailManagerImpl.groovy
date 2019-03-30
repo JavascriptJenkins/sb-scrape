@@ -21,7 +21,7 @@ class EmailManagerImpl implements EmailManager {
     private static Session getMailSession
     private static MimeMessage generateMailMessage
 
-    void generateAndSendEmail(String dataToSend, ArrayList<String> emailList) throws AddressException, MessagingException {
+    void generateAndSendEmail(String dataToSend, ArrayList<String> emailList, String subject) throws AddressException, MessagingException {
 
         // Step1
         System.out.println("\n 1st ===> setup Mail Server Properties..")
@@ -46,7 +46,7 @@ class EmailManagerImpl implements EmailManager {
             generateMailMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(email))
         }
 
-        generateMailMessage.setSubject("china wok take ur order preez how many craigslist results u like rong time")
+        generateMailMessage.setSubject("SPORTVVS ALERT: "+subject)
         String emailBody = dataToSend
         generateMailMessage.setContent(emailBody, "text/html")
         System.out.println("Mail Session has been created successfully..")
@@ -57,7 +57,8 @@ class EmailManagerImpl implements EmailManager {
 
         // Enter your correct gmail UserID and Password
         // if you have 2FA enabled then provide App Specific Password
-        transport.connect("smtp.gmail.com", "craigslistbabygurl@gmail.com", "scrape11")
+       // transport.connect("smtp.gmail.com", "craigslistbabygurl@gmail.com", "scrape11")
+        transport.connect("smtp.gmail.com", "robotsportvvs@gmail.com", "Sportvvs1\$")
         transport.sendMessage(generateMailMessage, generateMailMessage.getAllRecipients())
         transport.close()
     }

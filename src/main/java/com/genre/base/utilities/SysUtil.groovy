@@ -13,4 +13,7 @@ interface SysUtil {
 
     String removeWhiteSpace(String inputString)
 
+    long get1971epochMs()
+    long get2030epochMs()
+
 }

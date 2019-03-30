@@ -3,10 +3,16 @@ package com.genre.base.scraper.repo.objects.nhl
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
+import javax.persistence.CascadeType
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
+import javax.persistence.OneToMany
+import javax.persistence.OneToOne
 import javax.persistence.Table
 import javax.persistence.Temporal
 import javax.persistence.TemporalType
@@ -16,22 +22,18 @@ import javax.persistence.TemporalType
 @Table(name="subscription")
 class SubscriptionVO implements Serializable {
 
+    @ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name="user_id")
+    UserVO userVO
+
+    @OneToOne(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name="subscription_type_id")
+    SubscriptionTypeVO subscriptionTypeVO
+
     @Id
     @JsonProperty
     @GeneratedValue(strategy = GenerationType.AUTO)
-    Integer subscription_type_id
-
-    @JsonProperty
-    String subscriptionName // ie. "Starting Goalie Subscription"
-
-    @JsonProperty
-    String subscriptionText // ie. "Subscribe to all goalie updates now!"
-
-    @JsonProperty
-    String priceMonthly // price by the month
-
-    @JsonProperty
-    String priceSeason // price for a season
+    Long subscription_id
 
     @JsonProperty
     Integer active // can be used by administrators to de-activate a subscription if need be (off season, etc.)

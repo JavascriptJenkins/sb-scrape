@@ -3,8 +3,10 @@ package com.genre.base.scraper.task
 import com.genre.base.email.EmailManager
 import com.genre.base.scraper.constants.ScrapeConstants
 import com.genre.base.scraper.repo.GoalieVORepo
+import com.genre.base.scraper.repo.SubscriptionVORepo
 import com.genre.base.scraper.repo.UserVORepo
 import com.genre.base.scraper.repo.objects.nhl.GoalieVO
+import com.genre.base.scraper.repo.objects.nhl.SubscriptionVO
 import com.genre.base.utilities.SysUtil
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -27,6 +29,9 @@ class ScrapeMailerTask implements Runnable {
 
     @Autowired
     SysUtil sysUtil
+
+    @Autowired
+    SubscriptionVORepo subscriptionVORepo
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass())
 
@@ -59,33 +64,36 @@ class ScrapeMailerTask implements Runnable {
         Thread.sleep(sysUtil.getRandomNumber()); // sleep random between 5-15 seconds
         logger.info(ScrapeConstants.DFO_GOALIE_EMAIL_NOTIF+" ----> STARTING. ");
 
-        ArrayList<String> emailList = null
 
 
+        // get a list of all the goalie update subscriptions
+        List<SubscriptionVO> sublist =
+                subscriptionVORepo.getSubscriptionsByIdOnlyWithActiveUser(ScrapeConstants.DFO_GOALIE_SCRAPE_TYPE_LONG)
+
+        // get a list of all non-sent goalies
+        Collection <GoalieVO> nonSentGoalies = goalieVORepo.getAllGoaliesByWasSentToAll(0)
+
+        // create a list to pass into the email interface
         ArrayList<String> userEmails = new ArrayList<>()
 
+        // add all subscribed users to the emailList
+        sublist.each { SubscriptionVO item ->
+            userEmails.add(item.userVO.email)
+        }
+
+        // create a list of goalies to mark as already sent
         Collection <GoalieVO> goaliesToMarkAsSent = new ArrayList<>()
 
-        // get a collection of all non-sent goalies
-        Collection <GoalieVO> goaliesToSend = goalieVORepo.getAllGoaliesByWasSentToAll(0)
-
-        // for some reason hibernate returns an object array with both UserVO AND UserSubscriptionVO
-        Object[] goalieUsers =  userVORepo.getAllActiveUsersBySubscriptionTypeID(ScrapeConstants.DFO_GOALIE_SCRAPE_TYPE_INT)
-
-        // Strip out only the UserVO objects from the HQL query that returned us an object array...
-        goalieUsers.eachWithIndex { Object[] entry ->
-            userEmails.add(entry[0][0].email) // this is a UserVO type, getting the email is dirty but ok
-        }
 
         StringBuilder goalieInfoSb = new StringBuilder()
         goalieInfoSb.append("GOALIES WHO WERE CONFIRMED: ")
-        goalieInfoSb.append("||")
 
         // this loop will produce a list of goalies to mark as sent, and also a string we can send in an email to users
-        for(GoalieVO goalieVO : goaliesToSend){
+        for(GoalieVO goalieVO : nonSentGoalies){
 
             // if updateDate is after createDate and isConfirmed == 1, then send an email
-            if(goalieVO.updateTimeStamp.after(goalieVO.createTimeStamp)
+            if(goalieVO.updateTimeStamp != null &&
+            goalieVO.updateTimeStamp.after(goalieVO.createTimeStamp)
                 && goalieVO.isConfirmed == 1
                     && goalieVO.wasSentToAllEmails == 0){
                 appendStringData(goalieInfoSb, goalieVO)
@@ -98,23 +106,46 @@ class ScrapeMailerTask implements Runnable {
             }
         }
 
-        // if it contains this text we know there is meaningful data to send
-        if(goalieInfoSb.contains("DATE TIME OF GAME")){
+        // if there is anything to be sent, send it
+        if(goaliesToMarkAsSent.size() > 0){
             // for each user, send an email with the goalie object data
             sendGoalieDataToUsers(goalieInfoSb.toString(), userEmails, goaliesToMarkAsSent)
         }
     }
 
     static void appendStringData(StringBuilder goalieInfoSb, GoalieVO goalieVO){
-        goalieInfoSb.append("--------------------------------------------")
-        goalieInfoSb.append("NAME: ")
-        goalieInfoSb.append(System.getProperty("line.separator"))
+
+
+        goalieInfoSb.append('<div>')
+        goalieInfoSb.append('<br>')
+        goalieInfoSb.append('GAME INFO: ')
+        goalieInfoSb.append(goalieVO.nhlGameVO.gameDesc)
+        goalieInfoSb.append('<br>')
+        goalieInfoSb.append('NAME: ')
         goalieInfoSb.append(goalieVO.name)
-        goalieInfoSb.append("DATE TIME OF GAME: ")
-        goalieInfoSb.append(System.getProperty("line.separator"))
-        goalieInfoSb.append(goalieVO.dateTimeOfGame)
-        goalieInfoSb.append("--------------------------------------------")
-        goalieInfoSb.append(System.getProperty("line.separator"))
+        goalieInfoSb.append('<br>')
+        goalieInfoSb.append('TEAM NAME: ')
+        goalieInfoSb.append(goalieVO.teamName)
+        goalieInfoSb.append('<br>')
+        goalieInfoSb.append('GOALIE DESC: ')
+        goalieInfoSb.append(goalieVO.goalieDesc)
+        goalieInfoSb.append('<br>')
+        goalieInfoSb.append('SOURCE: ')
+        goalieInfoSb.append(goalieVO.source)
+        goalieInfoSb.append('</div>')
+
+
+
+
+//        goalieInfoSb.append("--------------------------------------------")
+//        goalieInfoSb.append("NAME: ")
+//        goalieInfoSb.append(System.getProperty("line.separator"))
+//        goalieInfoSb.append(goalieVO.name)
+//        goalieInfoSb.append("DATE TIME OF GAME: ")
+//        goalieInfoSb.append(System.getProperty("line.separator"))
+//        goalieInfoSb.append(goalieVO.nhlGameVO.getDateTimeOfGame())
+//        goalieInfoSb.append("--------------------------------------------")
+//        goalieInfoSb.append(System.getProperty("line.separator"))
 
     }
 
@@ -122,11 +153,11 @@ class ScrapeMailerTask implements Runnable {
 
         try {
 
-            emailManager.generateAndSendEmail(goalieEmailData, userEmails)
+            emailManager.generateAndSendEmail(goalieEmailData, userEmails, "GOALIES CONFIRMED!")
 
             for(GoalieVO obj : goaliesToMarkAsSent){
                 // update each object so it doesn't get set again
-                goalieVORepo.updateGoalieVOToggle(1, obj.id)
+                goalieVORepo.updateGoalieVOToggle(1, obj.getGoalie_id())
             }
 
         } catch (Exception ex){
