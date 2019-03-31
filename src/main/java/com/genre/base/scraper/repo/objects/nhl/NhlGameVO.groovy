@@ -19,6 +19,12 @@ class NhlGameVO implements Serializable {
     Long nhl_game_id
 
     @JsonProperty
+    String hometeam
+
+    @JsonProperty
+    String awayteam
+
+    @JsonProperty
     String gameDesc
 
     @JsonProperty

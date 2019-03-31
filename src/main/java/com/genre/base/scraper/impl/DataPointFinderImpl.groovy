@@ -70,6 +70,8 @@ class DataPointFinderImpl implements DatapointFinder {
         // set nhl game properties
         if(entry.contains('at') && i <= 1 && sysUtil.isAlpha(entry)){
             nhlGameVO.setGameDesc(entry)
+            nhlGameVO.setAwayteam(extractTeamName(entry, FIRST_TEAM))
+            nhlGameVO.setHometeam(extractTeamName(entry, SECOND_TEAM))
         }
         if(entry.contains('pm') || entry.contains('am')
                 && i <= 2 && !sysUtil.isAlpha(entry)){
