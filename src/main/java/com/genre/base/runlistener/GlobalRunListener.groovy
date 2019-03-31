@@ -10,6 +10,8 @@ import com.genre.base.scraper.executers.ExecuteGoalieScrape
 import com.genre.base.scraper.impl.DfoGoalieScrapeImpl
 import com.genre.base.scraper.repo.GoalieVORepo
 import com.genre.base.scraper.repo.NhlGameVORepo
+import com.genre.base.scraper.repo.ScrapeAuditVORepo
+import com.genre.base.scraper.repo.ScrapeTypeVORepo
 import com.genre.base.scraper.repo.SubscriptionVORepo
 import com.genre.base.scraper.repo.UserVORepo
 import com.genre.base.scraper.task.ScrapeMailerTask
@@ -78,6 +80,12 @@ class GlobalRunListener implements ApplicationListener<ApplicationReadyEvent>{
     @Autowired
     SubscriptionVORepo subscriptionVORepo
 
+    @Autowired
+    ScrapeAuditVORepo scrapeAuditVORepo
+
+    @Autowired
+    ScrapeTypeVORepo scrapeTypeVORepo
+
     @Override
     void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         println("THE APP STARTED OMG")
@@ -91,6 +99,8 @@ class GlobalRunListener implements ApplicationListener<ApplicationReadyEvent>{
         PeriodicTrigger periodicTrigger = new PeriodicTrigger(1000, TimeUnit.MICROSECONDS)
         periodicTrigger.setFixedRate(false)
 
+        testData.insertOfficialData()
+
         // insert test/initialization data
         testData.insertUserSubscriptionTestData()
 
@@ -102,9 +112,11 @@ class GlobalRunListener implements ApplicationListener<ApplicationReadyEvent>{
                 chromeDriverManager:chromeDriverManager,
                 executeGoalieScrape:executeGoalieScrape,
                 datapointFinder: datapointFinder,
-                environment: environment), periodicTrigger)
-
-
+                environment: environment,
+                scrapeAuditVORepo: scrapeAuditVORepo,
+                scrapeTypeVORepo: scrapeTypeVORepo), periodicTrigger)
+//
+//
         threadPoolTaskScheduler.schedule(new ScrapeMailerTask(
                 goalieVORepo:goalieVORepo,
                 emailManager: emailManager,
