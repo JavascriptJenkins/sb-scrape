@@ -126,9 +126,11 @@ class ScrapeMailerTask implements Runnable {
         goalieInfoSb.append('<br>')
         goalieInfoSb.append('TEAM NAME: ')
         goalieInfoSb.append(goalieVO.teamName)
-        goalieInfoSb.append('<br>')
-        goalieInfoSb.append('GOALIE DESC: ')
-        goalieInfoSb.append(goalieVO.goalieDesc)
+        if(goalieVO.goalieDesc != null){
+            goalieInfoSb.append('<br>')
+            goalieInfoSb.append('GOALIE DESC: ')
+            goalieInfoSb.append(goalieVO.goalieDesc)
+        }
         goalieInfoSb.append('<br>')
         goalieInfoSb.append('SOURCE: ')
         goalieInfoSb.append(goalieVO.source)
