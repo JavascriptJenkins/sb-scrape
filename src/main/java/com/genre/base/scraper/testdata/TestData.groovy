@@ -7,4 +7,6 @@ interface TestData {
 
     void insertUserSubscriptionTestData()
 
+    void insertOfficialData()
+
 }

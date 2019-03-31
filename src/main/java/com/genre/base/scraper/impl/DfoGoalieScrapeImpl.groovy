@@ -9,11 +9,14 @@ import com.genre.base.scraper.executers.ExecuteGoalieScrape
 import com.genre.base.scraper.objects.page.DfoGoaliePage
 import com.genre.base.scraper.repo.GoalieVORepo
 import com.genre.base.scraper.repo.NhlGameVORepo
+import com.genre.base.scraper.repo.ScrapeAuditVORepo
+import com.genre.base.scraper.repo.ScrapeTypeVORepo
 import com.genre.base.scraper.repo.objects.nhl.GoalieVO
 import com.genre.base.scraper.repo.objects.nhl.NhlGameVO
+import com.genre.base.scraper.repo.objects.nhl.ScrapeAuditVO
+import com.genre.base.scraper.repo.objects.nhl.ScrapeTypeVO
 import com.genre.base.utilities.SysUtil
 import org.openqa.selenium.WebElement
-import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
 import org.openqa.selenium.remote.RemoteWebDriver
 import org.slf4j.Logger
@@ -37,6 +40,12 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
     NhlGameVORepo nhlGameVORepo
 
     @Autowired
+    ScrapeAuditVORepo scrapeAuditVORepo
+
+    @Autowired
+    ScrapeTypeVORepo scrapeTypeVORepo
+
+    @Autowired
     SysUtil sysUtil
 
     @Autowired
@@ -44,7 +53,6 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
 
     @Autowired
     ExecuteGoalieScrape executeGoalieScrape
-
 
     @Autowired
     DatapointFinder datapointFinder
@@ -64,6 +72,19 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
 
 
     private void executeSeleniumSearch(String url){
+
+       // Optional<ScrapeTypeVO> optional = scrapeTypeVORepo.findById(ScrapeConstants.GOALIE_NOTIFICATION_ST)
+
+        // create audit object
+        ScrapeAuditVO scrapeAuditVO = new ScrapeAuditVO(
+                start: new Date(),
+                createTimeStamp: new Date())
+
+        // save it and assign id
+        ScrapeAuditVO result = scrapeAuditVORepo.save(scrapeAuditVO)
+        scrapeAuditVO.setScrape_audit_id(result.getScrape_audit_id())
+        scrapeAuditVO.setScrapeTypeVO(new ScrapeTypeVO(scrape_type_id: ScrapeConstants.GOALIE_NOTIFICATION_ST))
+
 
         boolean success = false
 
@@ -95,17 +116,25 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
             success = executeGoalieScrape.executeGoalieScrape(url,driver)
             if(success){
                 logger.info('-----> Scrape success.  Extracting data. ')
-                extractData(driver)
+                extractData(driver, scrapeAuditVO)
+                scrapeAuditVO.setSuccess(success)
+                scrapeAuditVO.setEnd(new Date())
+                scrapeAuditVO.setDuration(new Date(scrapeAuditVO.getEnd().getTime() - scrapeAuditVO.getStart().getTime()))
+                scrapeAuditVO.setUpdateTimeStamp(new Date())
+                scrapeAuditVORepo.save(scrapeAuditVO)
                 chromeDriverManager.quitDriverRemote(driver)
             } else {
                 logger.info('-----> Scrape failed.  Trying again. ')
+                scrapeAuditVO.setSuccess(success)
+                scrapeAuditVO.setUpdateTimeStamp(new Date())
+                scrapeAuditVORepo.save(scrapeAuditVO)
                 chromeDriverManager.quitDriverRemote(driver)
             }
        // }
     }
 
     // extract data from the page and save it to database
-    void extractData(RemoteWebDriver driver){
+    void extractData(RemoteWebDriver driver, ScrapeAuditVO scrapeAuditVO){
 
         try{
             // dfoGoaliePage.startingGoaliesCard[0].text
@@ -142,6 +171,10 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
             }
         } catch (Exception ex){
             logger.info('--------> Caught exeption while extracting data.  Ignoring and will try again on next loop, '+ex)
+            scrapeAuditVO.setSuccess(false)
+            scrapeAuditVO.setException(ex.toString())
+            scrapeAuditVO.setUpdateTimeStamp(new Date())
+            scrapeAuditVORepo.save(scrapeAuditVO)
         }
 
     }

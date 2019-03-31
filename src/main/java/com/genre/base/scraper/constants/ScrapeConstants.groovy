@@ -11,5 +11,8 @@ class ScrapeConstants {
 
     static DFO_GOALIE_SCRAPE_TYPE_LONG = 1
 
+    static GOALIE_NOTIFICATION = "GOALIE_NOTIFICATION"
+    static long GOALIE_NOTIFICATION_ST = 1
+
 
 }

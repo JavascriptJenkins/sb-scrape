@@ -1,8 +1,13 @@
 package com.genre.base.scraper.testdata.impl
 
+import com.genre.base.scraper.constants.ScrapeConstants
+import com.genre.base.scraper.repo.ScrapeAuditVORepo
+import com.genre.base.scraper.repo.ScrapeTypeVORepo
 import com.genre.base.scraper.repo.SubscriptionTypeVORepo
 import com.genre.base.scraper.repo.SubscriptionVORepo
 import com.genre.base.scraper.repo.UserVORepo
+import com.genre.base.scraper.repo.objects.nhl.ScrapeAuditVO
+import com.genre.base.scraper.repo.objects.nhl.ScrapeTypeVO
 import com.genre.base.scraper.repo.objects.nhl.SubscriptionTypeVO
 import com.genre.base.scraper.repo.objects.nhl.SubscriptionVO
 import com.genre.base.scraper.repo.objects.nhl.UserVO
@@ -26,6 +31,12 @@ class TestDataImpl implements TestData {
 
     @Autowired
     SubscriptionTypeVORepo subscriptionTypeVORepo
+
+    @Autowired
+    ScrapeTypeVORepo scrapeTypeVORepo
+
+    @Autowired
+    ScrapeAuditVORepo scrapeAuditVORepo
 
     @Autowired
     SysUtil sysUtil
@@ -153,5 +164,20 @@ class TestDataImpl implements TestData {
 
 
 
+    }
+
+
+    void insertOfficialData(){
+
+        if(Boolean.parseBoolean(environment.getProperty('hydrate.init.data'))) {
+
+            ScrapeTypeVO scrapeTypeVO = new ScrapeTypeVO(
+                    name: ScrapeConstants.GOALIE_NOTIFICATION,
+                    description: "This will scrape starting nhl goalie site and track when starting goalies change. ",
+                    createTimeStamp: new Date()
+            )
+
+            ScrapeTypeVO result = scrapeTypeVORepo.save(scrapeTypeVO)
+        }
     }
 }
