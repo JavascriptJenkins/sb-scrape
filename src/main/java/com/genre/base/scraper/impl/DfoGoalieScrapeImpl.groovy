@@ -172,7 +172,7 @@ class DfoGoalieScrapeImpl implements DfoGoalieScrape , Runnable {
         } catch (Exception ex){
             logger.info('--------> Caught exeption while extracting data.  Ignoring and will try again on next loop, '+ex)
             scrapeAuditVO.setSuccess(false)
-            scrapeAuditVO.setException(ex.getMessage())
+            //scrapeAuditVO.setException(ex.getMessage())
             scrapeAuditVO.setUpdateTimeStamp(new Date())
             scrapeAuditVORepo.save(scrapeAuditVO)
         }
